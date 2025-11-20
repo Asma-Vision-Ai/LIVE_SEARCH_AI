@@ -1,0 +1,8 @@
+Flask
+torch
+open_clip_torch
+Pillow
+opencv-python
+numpy
+Werkzeug
+python-dotenv
