@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Search AI - Upload & Live Stream</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .config-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .config-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #718096;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background: #f1f5f9;
+        }
+
+        .tab.active {
+            color: #667eea;
+            background: white;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .search-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="password"],
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .file-upload {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: #ebf4ff;
+        }
+
+        .file-upload-input {
+            display: none;
+        }
+
+        .file-upload-label {
+            cursor: pointer;
+            color: #4a5568;
+        }
+
+        .file-upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .settings-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 68, 68, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .results-header h2 {
+            color: #2d3748;
+            font-size: 24px;
+        }
+
+        .alert-badge {
+            background: #ff4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .alert-badge.success {
+            background: #48bb78;
+            animation: none;
+        }
+
+        .video-info {
+            background: #ebf4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .result-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .result-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card.alert {
+            border-color: #ff4444;
+            background: #fff5f5;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-rank {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .result-rank.alert {
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .score-bar {
+            background: #e2e8f0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .score-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .score-fill.alert {
+            background: linear-gradient(90deg, #ff4444 0%, #cc0000 100%);
+        }
+
+        .result-image {
+            width: 100%;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .stream-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stream-card.running {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .stream-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stream-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stream-status.running {
+            background: #48bb78;
+            color: white;
+        }
+
+        .stream-status.stopped {
+            background: #cbd5e0;
+            color: #4a5568;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .stream-info {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stream-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .stream-info-row:last-child {
+            border-bottom: none;
+        }
+
+        .stream-preview {
+            width: 100%;
+            height: 300px;
+            background: #000;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            overflow: hidden;
+        }
+
+        .stream-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .query-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .query-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        .success {
+            background: #e6ffed;
+            color: #22863a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #22863a;
+            display: none;
+        }
+
+        .success.active {
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            animation: slideUp 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #2d3748;
+            font-size: 24px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #718096;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+        }
+
+        .close-btn:hover {
+            color: #2d3748;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .settings-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .result-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .config-btn {
+                position: static;
+                margin-top: 10px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="config-btn" onclick="openConfigModal()">⚙️ Email Settings</button>
+            <h1>🎬 Video Search AI</h1>
+            <p>Search uploaded videos & monitor live RTSP streams with automated alerts</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('upload')">📹 Upload Video</div>
+            <div class="tab" onclick="switchTab('rtsp')">📡 Live RTSP Streams</div>
+        </div>
+
+        <!-- Upload Video Tab -->
+        <div class="tab-content active" id="uploadTab">
+            <div class="error" id="error"></div>
+            <div class="success" id="success"></div>
+
+            <form id="searchForm" class="search-section">
+                <div class="form-group">
+                    <label for="query">Search Query</label>
+                    <input 
+                        type="text" 
+                        id="query" 
+                        name="query" 
+                        placeholder="e.g., violence, fire, fighting, suspicious activity, thief..."
+                        required
+                    >
+                    <div class="help-text">💡 Alert keywords: violence, fighting, fire, suspicious, weapon, thief, accident, emergency</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Video</label>
+                    <div class="file-upload" id="fileUpload">
+                        <input 
+                            type="file" 
+                            id="video" 
+                            name="video" 
+                            accept="video/*" 
+                            class="file-upload-input"
+                            required
+                        >
+                        <label for="video" class="file-upload-label">
+                            <div class="file-upload-icon">📹</div>
+                            <div>Click to upload or drag and drop</div>
+                            <div style="font-size: 12px; color: #718096; margin-top: 8px;">
+                                Supports MP4, AVI, MOV, etc.
+                            </div>
+                        </label>
+                        <div class="file-name" id="fileName"></div>
+                    </div>
+                </div>
+
+                <div class="settings-row">
+                    <div class="form-group">
+                        <label for="fps">Frames Per Second</label>
+                        <input 
+                            type="number" 
+                            id="fps" 
+                            name="fps" 
+                            value="5" 
+                            min="1" 
+                            max="30"
+                            title="Higher = more accurate but slower"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="top_k">Number of Results</label>
+                        <input 
+                            type="number" 
+                            id="top_k" 
+                            name="top_k" 
+                            value="5" 
+                            min="1" 
+                            max="20"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input 
+                            type="checkbox" 
+                            id="send_alert" 
+                            name="send_alert" 
+                            checked
+                        >
+                        <label for="send_alert">📧 Send email alerts for suspicious activity</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="searchBtn">
+                    Search Video
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="color: #4a5568; font-size: 16px;">Processing video... This may take a few moments</p>
+            </div>
+
+            <div class="results" id="results">
+                <div class="results-header">
+                    <h2>Search Results</h2>
+                    <div id="alertStatus"></div>
+                </div>
+                <div class="video-info" id="videoInfo"></div>
+                <div id="resultsContainer"></div>
+            </div>
+        </div>
+
+        <!-- RTSP Streams Tab -->
+        <div class="tab-content" id="rtspTab">
+            <div class="error" id="rtspError"></div>
+            <div class="success" id="rtspSuccess"></div>
+
+            <form id="rtspForm" class="search-section">
+                <h3 style="margin-bottom: 20px; color: #2d3748;">Add New RTSP Stream</h3>
+                
+                <div class="form-group">
+                    <label for="stream_id">Stream ID / Camera Name</label>
+                    <input 
+                        type="text" 
+                        id="stream_id" 
+                        name="stream_id" 
+                        placeholder="e.g., front_door, parking_lot, warehouse_1"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="rtsp_url">RTSP URL</label>
+                    <input 
+                        type="url" 
+                        id="rtsp_url" 
+                        name="rtsp_url" 
+                        placeholder="rtsp://username:password@192.168.1.100:554/stream"
+                        required
+                    >
+                    <div class="help-text">📹 Format: rtsp://username:password@ip:port/stream</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="queries">Detection Queries (one per line)</label>
+                    <textarea 
+                        id="queries" 
+                        name="queries" 
+                        placeholder="fighting&#10;fire&#10;suspicious activity&#10;thief&#10;weapon"
+                        required
+                    ></textarea>
+                    <div class="help-text">💡 Each query will be monitored separately. Alerts triggered when detected.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="check_interval">Check Interval (seconds)</label>
+                    <input 
+                        type="number" 
+                        id="check_interval" 
+                        name="check_interval" 
+                        value="2" 
+                        min="1" 
+                        max="60"
+                    >
+                    <div class="help-text">⏱️ How often to analyze frames (lower = more frequent checks)</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    🚀 Start Monitoring
+                </button>
+            </form>
+
+            <div style="margin-top: 40px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #2d3748;">Active Streams</h3>
+                    <button class="btn btn-primary" onclick="refreshStreams()" style="width: auto; padding: 10px 20px; font-size: 14px;">
+                        🔄 Refresh
+                    </button>
+                </div>
+                <div id="streamsContainer">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📡</div>
+                        <p>No active streams. Add a stream above to start monitoring.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Configuration Modal -->
+    <div class="modal" id="configModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Email Configuration</h2>
+                <button class="close-btn" onclick="closeConfigModal()">&times;</button>
+            </div>
+            <form id="configForm">
+                <div class="form-group">
+                    <label for="sender_email">Sender Email (Gmail)</label>
+                    <input 
+                        type="email" 
+                        id="sender_email" 
+                        name="sender_email" 
+                        placeholder="your_email@gmail.com"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="sender_password">App Password</label>
+                    <input 
+                        type="password" 
+                        id="sender_password" 
+                        name="sender_password" 
+                        placeholder="Enter Gmail App Password"
+                        required
+                    >
+                    <div class="help-text">⚠️ Use Gmail App Password, not your regular password. <a href="https://support.google.com/accounts/answer/185833" target="_blank">Learn how</a></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipient_email">Recipient Email</label>
+                    <input 
+                        type="email" 
+                        id="recipient_email" 
+                        name="recipient_email" 
+                        placeholder="recipient@example.com"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Configuration</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(tc => tc.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab === 'upload' ? 'uploadTab' : 'rtspTab').classList.add('active');
+            
+            if (tab === 'rtsp') {
+                refreshStreams();
+            }
+        }
+
+        // Upload Video Section
+        const form = document.getElementById('searchForm');
+        const videoInput = document.getElementById('video');
+        const fileUpload = document.getElementById('fileUpload');
+        const fileName = document.getElementById('fileName');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const videoInfo = document.getElementById('videoInfo');
+        const alertStatus = document.getElementById('alertStatus');
+        const error = document.getElementById('error');
+        const success = document.getElementById('success');
+        const searchBtn = document.getElementById('searchBtn');
+
+        // RTSP Section
+        const rtspForm = document.getElementById('rtspForm');
+        const rtspError = document.getElementById('rtspError');
+        const rtspSuccess = document.getElementById('rtspSuccess');
+        const streamsContainer = document.getElementById('streamsContainer');
+
+        // Modal
+        const configModal = document.getElementById('configModal');
+        const configForm = document.getElementById('configForm');
+
+        function openConfigModal() {
+            configModal.classList.add('active');
+        }
+
+        function closeConfigModal() {
+            configModal.classList.remove('active');
+        }
+
+        configModal.addEventListener('click', (e) => {
+            if (e.target === configModal) {
+                closeConfigModal();
+            }
+        });
+
+        // Email configuration
+        configForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                sender_email: document.getElementById('sender_email').value,
+                sender_password: document.getElementById('sender_password').value,
+                recipient_email: document.getElementById('recipient_email').value
+            };
+
+            try {
+                const response = await fetch('/configure-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    success.textContent = '✓ Email configuration saved successfully!';
+                    success.classList.add('active');
+                    setTimeout(() => success.classList.remove('active'), 3000);
+                    closeConfigModal();
+                } else {
+                    throw new Error(data.error || 'Configuration failed');
+                }
+            } catch (err) {
+                error.textContent = `Error: ${err.message}`;
+                error.classList.add('active');
+                setTimeout(() => error.classList.remove('active'), 5000);
+            }
+        });
+
+        // File upload handling
+        videoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileName.textContent = `✓ ${e.target.files[0].name}`;
+            }
+        });
+
+        fileUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        });
+
+        fileUpload.addEventListener('dragleave', () => {
+            fileUpload.classList.remove('dragover');
+        });
+
+        fileUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                videoInput.files = e.dataTransfer.files;
+                fileName.textContent = `✓ ${e.dataTransfer.files[0].name}`;
+            }
+        });
+
+        // Upload video form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            error.classList.remove('active');
+            success.classList.remove('active');
+            results.classList.remove('active');
+            loading.classList.add('active');
+            searchBtn.disabled = true;
+
+            const formData = new FormData(form);
+            formData.append('send_alert', document.getElementById('send_alert').checked);
+
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Search failed');
+                }
+
+                displayResults(data);
+                
+                if (data.alert_triggered) {
+                    if (data.email_sent) {
+                        success.textContent = '✓ Alert detected! Email notification sent successfully.';
+                        success.classList.add('active');
+                    } else {
+                        error.textContent = '⚠️ Alert detected but email notification failed. Please check email configuration.';
+                        error.classList.add('active');
+                    }
+                }
+            } catch (err) {
+                error.textContent = `Error: ${err.message}`;
+                error.classList.add('active');
+            } finally {
+                loading.classList.remove('active');
+                searchBtn.disabled = false;
+            }
+        });
+
+        function displayResults(data) {
+            if (data.alert_triggered) {
+                alertStatus.innerHTML = data.email_sent 
+                    ? '<span class="alert-badge success">✓ Email Alert Sent</span>'
+                    : '<span class="alert-badge">🚨 Alert Triggered</span>';
+            } else {
+                alertStatus.innerHTML = '';
+            }
+
+            videoInfo.innerHTML = `
+                <div class="info-item">
+                    <div class="info-label">Duration</div>
+                    <div class="info-value">${data.video_info.duration.toFixed(1)}s</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Video FPS</div>
+                    <div class="info-value">${data.video_info.fps.toFixed(0)}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Frames Analyzed</div>
+                    <div class="info-value">${data.video_info.frames_extracted}</div>
+                </div>
+                ${data.sam_available ? `
+                <div class="info-item">
+                    <div class="info-label">Object Detection</div>
+                    <div class="info-value">✓ Active</div>
+                </div>
+                ` : ''}
+            `;
+
+            const isAlertQuery = data.alert_triggered;
+
+            resultsContainer.innerHTML = data.results.map((result, idx) => {
+                const isHighScore = result.score >= 0.25 && isAlertQuery;
+                return `
+                <div class="result-card ${isHighScore ? 'alert' : ''}">
+                    <div class="result-header">
+                        <div class="result-rank ${isHighScore ? 'alert' : ''}">${idx + 1}</div>
+                        <div class="result-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Timestamp</span>
+                                <span class="meta-value">${result.formatted_time}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Score</span>
+                                <span class="meta-value">${(result.score * 100).toFixed(1)}%</span>
+                            </div>
+                            ${result.objects_detected > 0 ? `
+                            <div class="meta-item">
+                                <span class="meta-label">Objects</span>
+                                <span class="meta-value">${result.objects_detected}</span>
+                            </div>
+                            ` : ''}
+                            ${isHighScore ? `
+                            <div class="meta-item">
+                                <span class="meta-label">Status</span>
+                                <span class="meta-value" style="color: #ff4444;">⚠️ Alert</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill ${isHighScore ? 'alert' : ''}" style="width: ${result.score * 100}%"></div>
+                    </div>
+                    <img src="${result.image}" alt="Frame at ${result.formatted_time}" class="result-image">
+                </div>
+            `}).join('');
+
+            results.classList.add('active');
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // RTSP Form submission
+        rtspForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            rtspError.classList.remove('active');
+            rtspSuccess.classList.remove('active');
+
+            const queries = document.getElementById('queries').value
+                .split('\n')
+                .map(q => q.trim())
+                .filter(q => q.length > 0);
+
+            const formData = {
+                stream_id: document.getElementById('stream_id').value,
+                rtsp_url: document.getElementById('rtsp_url').value,
+                queries: queries,
+                check_interval: parseInt(document.getElementById('check_interval').value)
+            };
+
+            try {
+                const response = await fetch('/rtsp/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    rtspSuccess.textContent = `✓ Stream "${formData.stream_id}" started successfully!`;
+                    rtspSuccess.classList.add('active');
+                    setTimeout(() => rtspSuccess.classList.remove('active'), 3000);
+                    rtspForm.reset();
+                    refreshStreams();
+                } else {
+                    throw new Error(data.error || 'Failed to start stream');
+                }
+            } catch (err) {
+                rtspError.textContent = `Error: ${err.message}`;
+                rtspError.classList.add('active');
+                setTimeout(() => rtspError.classList.remove('active'), 5000);
+            }
+        });
+
+        // Refresh streams status
+        async function refreshStreams() {
+            try {
+                const response = await fetch('/rtsp/status');
+                const data = await response.json();
+
+                if (response.ok && data.streams) {
+                    displayStreams(data.streams);
+                } else {
+                    throw new Error(data.error || 'Failed to fetch streams');
+                }
+            } catch (err) {
+                console.error('Error refreshing streams:', err);
+            }
+        }
+
+        function displayStreams(streams) {
+            if (Object.keys(streams).length === 0) {
+                streamsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📡</div>
+                        <p>No active streams. Add a stream above to start monitoring.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            streamsContainer.innerHTML = Object.entries(streams).map(([streamId, stream]) => {
+                const latestResults = stream.latest_results || {};
+                const hasAlerts = Object.values(latestResults).some(r => r.score >= 0.25);
+
+                return `
+                    <div class="stream-card ${stream.running ? 'running' : ''}">
+                        <div class="stream-header">
+                            <h3 style="color: #2d3748; margin: 0;">${streamId}</h3>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                ${hasAlerts ? '<span class="alert-badge">🚨 Alert</span>' : ''}
+                                <span class="stream-status ${stream.running ? 'running' : 'stopped'}">
+                                    ${stream.running ? '<span class="status-dot"></span> Running' : 'Stopped'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="stream-info">
+                            <div class="stream-info-row">
+                                <span style="color: #718096; font-size: 14px;">RTSP URL:</span>
+                                <span style="color: #2d3748; font-weight: 500; font-size: 14px;">${stream.rtsp_url}</span>
+                            </div>
+                            <div class="stream-info-row">
+                                <span style="color: #718096; font-size: 14px;">Check Interval:</span>
+                                <span style="color: #2d3748; font-weight: 500; font-size: 14px;">${stream.check_interval}s</span>
+                            </div>
+                            <div class="stream-info-row">
+                                <span style="color: #718096; font-size: 14px;">Monitoring:</span>
+                                <div class="query-tags">
+                                    ${stream.queries.map(q => `<span class="query-tag">${q}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+
+                        ${Object.keys(latestResults).length > 0 ? `
+                            <div style="margin-top: 15px;">
+                                <h4 style="color: #2d3748; margin-bottom: 10px; font-size: 14px;">Latest Detection Results:</h4>
+                                ${Object.entries(latestResults).map(([query, result]) => {
+                                    const isAlert = result.score >= 0.25;
+                                    return `
+                                        <div style="padding: 10px; background: ${isAlert ? '#fff5f5' : '#f8f9fa'}; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid ${isAlert ? '#ff4444' : '#667eea'};">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <span style="font-weight: 600; color: #2d3748;">${query}</span>
+                                                <span style="font-weight: 600; color: ${isAlert ? '#ff4444' : '#667eea'};">
+                                                    ${(result.score * 100).toFixed(1)}% ${isAlert ? '⚠️' : ''}
+                                                </span>
+                                            </div>
+                                            <div style="font-size: 12px; color: #718096; margin-top: 4px;">
+                                                Last checked: ${result.timestamp}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+
+                        <div class="stream-preview">
+                            <img src="/rtsp/stream/${streamId}" alt="Live stream preview" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: #718096;\\'>📹 Stream Preview Loading...</div>'">
+                        </div>
+
+                        <button class="btn btn-danger" onclick="stopStream('${streamId}')">
+                            Stop Monitoring
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function stopStream(streamId) {
+            try {
+                const response = await fetch('/rtsp/stop', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ stream_id: streamId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    rtspSuccess.textContent = `✓ Stream "${streamId}" stopped successfully!`;
+                    rtspSuccess.classList.add('active');
+                    setTimeout(() => rtspSuccess.classList.remove('active'), 3000);
+                    refreshStreams();
+                } else {
+                    throw new Error(data.error || 'Failed to stop stream');
+                }
+            } catch (err) {
+                rtspError.textContent = `Error: ${err.message}`;
+                rtspError.classList.add('active');
+                setTimeout(() => rtspError.classList.remove('active'), 5000);
+            }
+        }
+
+        // Auto-refresh streams every 10 seconds
+        setInterval(() => {
+            const rtspTab = document.getElementById('rtspTab');
+            if (rtspTab.classList.contains('active')) {
+                refreshStreams();
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
